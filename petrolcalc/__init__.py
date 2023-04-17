@@ -1,12 +1,67 @@
 import logging
-
+import requests
+import math
+from bs4 import BeautifulSoup
+import urllib3
 import azure.functions as func
 import json
+
+def get_all_state_prices(URL):
+    page = requests.get(URL, verify=False)
+    soup = BeautifulSoup(page.content, "html.parser")
+    table = soup.find("table")
+    table_body = table.find("tbody")
+    rows = table_body.findAll('tr')
+    fuel_price_dict = {}
+    i = 1
+    while i<len(rows):
+        cols = rows[i].findAll('td')
+        state = cols[0].find('a')
+        fuel_price = cols[1]
+        key_value = state.contents[0].replace(' ','')
+        value = float(fuel_price.contents[0].split(' ')[0])
+        fuel_price_dict[key_value]= value
+        i=i+1
+    return fuel_price_dict
+
+def calculate_total_fuel_cost(price_per_litre, total_distance, avg_mileage):
+    required_fuel = total_distance/avg_mileage
+    total_fuel_cost = required_fuel * price_per_litre
+    return round(required_fuel,2), round(total_fuel_cost,2)
+
+def roundup(x):
+    return int(math.ceil(x / 50.0)) * 50
+
+def get_response(all_state_prices, total_distance, avg_mileage, state_name, diesel=False):
+    if all_state_prices.get(state_name, -1) == -1:
+        response = {'message':'Provide proper values for state',
+                    'availableStates': list(all_state_prices.keys())}
+        return response, 422
+    else:
+        price_per_litre = all_state_prices[state_name]
+        if total_distance <= 0.0 or avg_mileage <= 0.0:
+            response = {'message':'Provide proper values for distance and mileage'}
+            return response, 422
+        else:
+            required_fuel, total_fuel_cost = calculate_total_fuel_cost(price_per_litre,total_distance,avg_mileage)
+            rounded_fuel_cost = roundup(total_fuel_cost)
+            response = { 'current_petrol_price': price_per_litre,
+                        'total_petrol_required_in_litres': required_fuel,
+                        'total_petrol_cost': total_fuel_cost,
+                        'total_petrol_cost_rounded': rounded_fuel_cost
+                        }
+            if diesel:
+                response = { 'current_diesel_price': price_per_litre,
+                        'total_diesel_required_in_litres': required_fuel,
+                        'total_diesel_cost': total_fuel_cost,
+                        'total_diesel_cost_rounded': rounded_fuel_cost
+                        }
+            return response, 200
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
     URL = 'https://www.ndtv.com/fuel-prices/petrol-price-in-all-state'
-
+    all_state_prices = get_all_state_prices(URL)
     distance = req.params.get('distance')
     if not distance:
         try:
@@ -36,7 +91,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             state = req_body.get('state')   
 
     if distance and mileage:
-        return func.HttpResponse(json.dumps({"distance":distance,"mileage":mileage,"state":state}),mimetype="application/json",status_code=200)
+        URL = 'https://www.ndtv.com/fuel-prices/petrol-price-in-all-state'
+        all_state_prices = get_all_state_prices(URL)
+        response, status_code = get_response(all_state_prices, distance, mileage, state)
+        return func.HttpResponse(json.dumps(response),mimetype="application/json",status_code=status_code)
     else:
         return func.HttpResponse(
              "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
