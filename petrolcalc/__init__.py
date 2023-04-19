@@ -98,5 +98,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     else:
         return func.HttpResponse(
              "Call this API to calculate the petyrol required for your trip.<br> Provide values for distance, mileage and state. Example url?distance=400&mileage=15&state=Kerala. <br> State is not mandatory, Kerala is taken by default",
+             mimetype="text/html",
              status_code=200
         )
