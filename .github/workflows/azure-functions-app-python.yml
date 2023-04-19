@@ -4,16 +4,20 @@ on:
   push:
     branches:
     - main
+  workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_NAME: 'grenstonfunctions'
+  AZURE_FUNCTIONAPP_NAME: 'gr10apis'
   AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'
   PYTHON_VERSION: '3.10'
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    environment: dev
+    environment:
+      name: dev
+      url: https://gr10apis.azurewebsites.net/api/petrolcalc
+      
     steps:
     - name: 'Checkout GitHub Action'
       uses: actions/checkout@v3
