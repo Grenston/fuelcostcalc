@@ -1,3 +1,6 @@
 {
-    "name": "Azure"
+    "current_petrol_price": 108.58,
+    "total_petrol_required_in_litres": 7.69,
+    "total_petrol_cost": 835.23,
+    "total_petrol_cost_rounded": 850
 }

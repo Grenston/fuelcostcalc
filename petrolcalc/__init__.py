@@ -98,7 +98,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     else:
         return func.HttpResponse(
              "Call this API to calculate the petrol required for your trip.<br>"+ \
-             "Provide values for distance, mileage and state. Example url?distance=400&mileage=15&state=Kerala.<br>"+ \
+             "Provide values for distance, mileage and state.<br>"+ \
+             "Example: <a href=https://gr10apis.azurewebsites.net/api/petrolcalc?distance=100&mileage=13&state=Kerala>https://gr10apis.azurewebsites.net/api/petrolcalc?distance=100&mileage=13&state=Kerala</a><br>"+ \
              "State is not mandatory, Kerala is taken by default.<br><br>"+ \
              "All state values:<br><br>"+ \
              "AndamanAndNicobar<br>AndhraPradesh<br>ArunachalPradesh<br>Assam<br>Bihar<br>Chandigarh<br>Chhatisgarh<br>"+ \
