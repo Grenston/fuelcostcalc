@@ -45,22 +45,15 @@ def get_response(all_state_prices, total_distance, avg_mileage, state_name, dies
         else:
             required_fuel, total_fuel_cost = calculate_total_fuel_cost(price_per_litre,total_distance,avg_mileage)
             rounded_fuel_cost = roundup(total_fuel_cost)
-            response = { 'current_petrol_price': price_per_litre,
-                        'total_petrol_required_in_litres': required_fuel,
-                        'total_petrol_cost': total_fuel_cost,
-                        'total_petrol_cost_rounded': rounded_fuel_cost
-                        }
-            if diesel:
-                response = { 'current_diesel_price': price_per_litre,
-                        'total_diesel_required_in_litres': required_fuel,
-                        'total_diesel_cost': total_fuel_cost,
-                        'total_diesel_cost_rounded': rounded_fuel_cost
+            response = { 'current_fuel_price': price_per_litre,
+                        'total_fuel_required_in_litres': required_fuel,
+                        'total_fuel_cost': total_fuel_cost,
+                        'total_fuel_cost_rounded': rounded_fuel_cost
                         }
             return response, 200
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
-    URL = 'https://www.ndtv.com/fuel-prices/petrol-price-in-all-state'
     all_state_prices = get_all_state_prices(URL)
     distance = req.params.get('distance')
     if not distance:
@@ -90,17 +83,29 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         else:
             state = req_body.get('state')   
 
+    fuel = req.params.get('fuel')
+    if not fuel:
+        try:
+            req_body = req.get_json()
+        except ValueError:
+            fuel = 'Petrol'
+        else:
+            state = req_body.get('state')  
+
     if distance and mileage:
         URL = 'https://www.ndtv.com/fuel-prices/petrol-price-in-all-state'
+        if fuel == 'Diesel':
+            URL = 'https://www.ndtv.com/fuel-prices/diesel-price-in-all-state'
         all_state_prices = get_all_state_prices(URL)
         response, status_code = get_response(all_state_prices, float(distance), float(mileage), state)
         return func.HttpResponse(json.dumps(response),mimetype="application/json",status_code=status_code)
     else:
         return func.HttpResponse(
              "Call this API to calculate the petrol required for your trip.<br>"+ \
-             "Provide values for distance, mileage and state.<br>"+ \
-             "Example: <a href=https://gr10apis.azurewebsites.net/api/petrolcalc?distance=100&mileage=13&state=Kerala>https://gr10apis.azurewebsites.net/api/petrolcalc?distance=100&mileage=13&state=Kerala</a><br>"+ \
-             "State is not mandatory, Kerala is taken by default.<br><br>"+ \
+             "Provide values for distance, mileage, state and fuel.<br>"+ \
+             "Example: <a href=https://gr10apis.azurewebsites.net/api/petrolcalc?distance=100&mileage=13&state=Kerala&fuel=Petrol>https://gr10apis.azurewebsites.net/api/petrolcalc?distance=100&mileage=13&state=Kerala&fuel=Petrol</a><br>"+ \
+             "State is not mandatory, Kerala is taken by default.<br>"+ \
+             "Fuel is not mandatory, Petrol is taken by default. The other available value is Diesel<br><br>"+ \
              "All state values:<br><br>"+ \
              "AndamanAndNicobar<br>AndhraPradesh<br>ArunachalPradesh<br>Assam<br>Bihar<br>Chandigarh<br>Chhatisgarh<br>"+ \
              "DadraAndNagarHaveli<br>DamanAndDiu<br>Delhi<br>Goa<br>Gujarat<br>Haryana<br>HimachalPradesh<br>"+ \

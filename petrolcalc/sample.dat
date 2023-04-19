@@ -1,6 +1,6 @@
 {
-    "current_petrol_price": 108.58,
-    "total_petrol_required_in_litres": 7.69,
-    "total_petrol_cost": 835.23,
-    "total_petrol_cost_rounded": 850
+    "current_fuel_price": 108.58,
+    "total_fuel_required_in_litres": 7.69,
+    "total_fuel_cost": 835.23,
+    "total_fuel_cost_rounded": 850
 }
