@@ -97,7 +97,15 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(json.dumps(response),mimetype="application/json",status_code=status_code)
     else:
         return func.HttpResponse(
-             "Call this API to calculate the petyrol required for your trip.<br> Provide values for distance, mileage and state. Example url?distance=400&mileage=15&state=Kerala. <br> State is not mandatory, Kerala is taken by default",
+             "Call this API to calculate the petrol required for your trip.<br>"+ \
+             "Provide values for distance, mileage and state. Example url?distance=400&mileage=15&state=Kerala.<br>"+ \
+             "State is not mandatory, Kerala is taken by default.<br><br>"+ \
+             "All state values:<br><br>"+ \
+             "AndamanAndNicobar<br>AndhraPradesh<br>ArunachalPradesh<br>Assam<br>Bihar<br>Chandigarh<br>Chhatisgarh<br>"+ \
+             "DadraAndNagarHaveli<br>DamanAndDiu<br>Delhi<br>Goa<br>Gujarat<br>Haryana<br>HimachalPradesh<br>"+ \
+             "JammuAndKashmir<br>Jharkhand<br>Karnataka<br>Kerala<br>MadhyaPradesh<br>Maharashtra<br>Manipur<br>"+ \
+             "Meghalaya<br>Mizoram<br>Nagaland<br>Odisha<br>Pondicherry<br>Punjab<br>Rajasthan<br>Sikkim<br>"+ \
+             "TamilNadu<br>Telangana<br>Tripura<br>UttarPradesh<br>Uttarakhand<br>WestBengal",
              mimetype="text/html",
              status_code=200
         )
