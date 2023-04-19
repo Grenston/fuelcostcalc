@@ -97,6 +97,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(json.dumps(response),mimetype="application/json",status_code=status_code)
     else:
         return func.HttpResponse(
-             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
+             "Call this API to calculate the petyrol required for your trip.<br> Provide values for distance, mileage and state. Example url?distance=400&mileage=15&state=Kerala. <br> State is not mandatory, Kerala is taken by default",
              status_code=200
         )
