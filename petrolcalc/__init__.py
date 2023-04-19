@@ -38,7 +38,7 @@ def get_response(all_state_prices, total_distance, avg_mileage, state_name, dies
                     'availableStates': list(all_state_prices.keys())}
         return response, 422
     else:
-        price_per_litre = all_state_prices[state_name]
+        price_per_litre = float(all_state_prices[state_name])
         if total_distance <= 0.0 or avg_mileage <= 0.0:
             response = {'message':'Provide proper values for distance and mileage'}
             return response, 422
@@ -93,7 +93,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     if distance and mileage:
         URL = 'https://www.ndtv.com/fuel-prices/petrol-price-in-all-state'
         all_state_prices = get_all_state_prices(URL)
-        response, status_code = get_response(all_state_prices, distance, mileage, state)
+        response, status_code = get_response(all_state_prices, float(distance), float(mileage), state)
         return func.HttpResponse(json.dumps(response),mimetype="application/json",status_code=status_code)
     else:
         return func.HttpResponse(
