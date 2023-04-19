@@ -54,7 +54,7 @@ def get_response(all_state_prices, total_distance, avg_mileage, state_name, dies
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
-    all_state_prices = get_all_state_prices(URL)
+    URL = 'https://www.ndtv.com/fuel-prices/petrol-price-in-all-state'
     distance = req.params.get('distance')
     if not distance:
         try:
@@ -93,7 +93,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             state = req_body.get('state')  
 
     if distance and mileage:
-        URL = 'https://www.ndtv.com/fuel-prices/petrol-price-in-all-state'
         if fuel == 'Diesel':
             URL = 'https://www.ndtv.com/fuel-prices/diesel-price-in-all-state'
         all_state_prices = get_all_state_prices(URL)
